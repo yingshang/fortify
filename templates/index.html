@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>结果显示</title>
+</head>
+<br>
+<table border="1">
+    <tr>
+        <th>编号</th>
+        <th>项目名字</th>
+        <th>扫描时间</th>
+    </tr>
+
+
+{% for token in tokens %}
+    <tr>
+        <td>{{ token.id }}</td>
+        <td><a href="/report/?t=inf&token={{ token.token }}" >{{ token.name }}</a></td>
+        <td>{{ token.time | date:"Y-m-d" }}</td>
+    </tr>
+{% endfor %}
+</table>
+</body>
+</html>

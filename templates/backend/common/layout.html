@@ -1,0 +1,148 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <title>代码审计平台</title>
+    <link href="{% static "asset/css/toolkit-inverse.css" %}" rel="stylesheet">
+    <link href="{% static "asset/css/application.css" %}" rel="stylesheet">
+    {% block style %}{% endblock %}
+</head>
+<body>
+<div class="bw">
+    <div class="fu">
+        {% if not data.capture %}
+            <div class="ge aom">
+                <nav class="aot">
+                    <div class="aon">
+                        <button class="amy amz aoo" type="button" data-toggle="collapse" data-target="#nav-toggleable-sm">
+                            <span class="ct">Toggle nav</span>
+                        </button>
+
+                    </div>
+                    <div class="collapse and" id="nav-toggleable-sm">
+
+                        <ul class="nav of nav-stacked">
+                            <li class="tq">仪表盘</li>
+                            <li class="{% block overview_active %}{% endblock %}">
+                                <a href="/overview">概要</a>
+                            </li>
+                            <li class="{% block projects_active %}{% endblock %}">
+                                <a href="/">项目</a>
+                            </li>
+                        </ul>
+                        <hr class="rw aky">
+                    </div>
+                </nav>
+            </div>
+        {% endif %}
+        <div class="{% if not data.capture %}hc{% else %}ho{% endif %} aps">
+            <div class="apa">
+                <div class="apb">
+                    <h6 class="apd">{% block nav_first %}{% endblock %}</h6>
+                    <h2 class="apc">{% block nav_second %}{% endblock %}</h2>
+                </div>
+            </div>
+            {% block body %}{% endblock %}
+            <hr class="aky">
+            <span class="anj" style="float:left;">Copyright © 2017 代码审计平台. All rights reserved</span>
+
+        </div>
+    </div>
+</div>
+<script src="{% static "asset/js/jquery.min.js" %}" type="text/javascript"></script>
+<script src="{% static "asset/js/chart.js" %}" type="text/javascript"></script>
+<script src="{% static "asset/js/tablesorter.min.js" %}" type="text/javascript"></script>
+<script src="{% static "asset/js/toolkit.js" %}" type="text/javascript"></script>
+<script src="{% static "asset/js/application.js" %}" type="text/javascript"></script>
+
+<script>
+    // execute/clear BS loaders for docs
+    $(function () {
+        while (window.BS && window.BS.loader && window.BS.loader.length) {
+            (window.BS.loader.pop())()
+        }
+    });
+
+    function make_pagination(cp, all_count) {
+        if (cp == '') {
+            return;
+        }
+        // make pagination
+        g_rule_back_page = cp;
+        gTaskBackPage = cp;
+        g_rule_back_method = "page";
+        // get all rules count first
+        var per_page_count = 10;
+        var total_pages = Math.ceil(all_count / per_page_count);
+        var current_page = cp;
+
+        var pp = "<ul class='ow'>";
+        pp += "<li><a id='prev' aria-label='Previous' role='button' class='btn' style='outline: none;' " +
+            "onclick=prev()>Prev</a></li>";
+        pp += "<li><a class='disabled'>" + current_page + " / " + total_pages + ' (Count: ' + all_count + ")</a></li>";
+        pp += "<li><a id='next' aria-label='Next' role='button' class='btn' style='outline: none;' " +
+            "onclick=next(" + total_pages + ")>Next</a></li>";
+        pp += "</ul>";
+
+        $("#paginate").html(pp);
+
+        if (current_page == 1) {
+            $("#prev").addClass('disabled')
+        }
+        if (current_page == total_pages) {
+            $("#next").addClass('disabled')
+        }
+    }
+
+    function prev() {
+        var page_url = window.location.href.match(/admin\/\w+\/\d+/g);
+        if (page_url == null) {
+            window.location.href = window.location.href + '1'
+        } else {
+            page_url = page_url[0];
+        }
+
+        var page = parseInt(page_url.match(/(\d+)/g));
+
+        if (page <= 1) {
+            window.location.href = window.location.href.replace(/admin\/\w+\/\d+/g, page_url);
+        } else {
+            page_url = page_url.replace(page, page - 1);
+            window.location.href = window.location.href.replace(/admin\/\w+\/\d+/g, page_url);
+        }
+        make_pagination(page - 1, t);
+        return;
+    }
+
+    function next(tp) {
+        var page_url = window.location.href.match(/admin\/\w+\/\d+/g);
+        if (page_url == null) {
+            window.location.href = window.location.href + '2'
+        } else {
+            page_url = page_url[0];
+        }
+
+        var page = parseInt(page_url.match(/(\d+)/g));
+
+        if (page >= tp) {
+            window.location.href = window.location.href.replace(/admin\/\w+\/\d+/g, page_url);
+        } else {
+            page_url = page_url.replace(page, page + 1);
+            window.location.href = window.location.href.replace(/admin\/\w+\/\d+/g, page_url);
+        }
+        make_pagination(page + 1, page);
+        return;
+    }
+
+    function notification(message) {
+        alert(message);
+    }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

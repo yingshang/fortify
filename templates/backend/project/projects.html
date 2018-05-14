@@ -1,0 +1,106 @@
+{% extends "backend/common/layout.html" %}
+{% load staticfiles %}
+{% block projects_active %}active{% endblock %}
+{% block nav_second %}项目{% endblock %}
+{% block body %}
+    <div class="akg ue">
+        <div class="akh aki">
+            <div class="tn aol">
+                <input type="text" class="form-control aqr btn-search-projects" placeholder="搜索项目" value="{{ data.keyword }}">
+                <span class="bv adn"></span>
+            </div>
+        </div>
+
+    </div>
+    <div class="ud">
+        <div class="eg">
+            <table class="cl" data-sort="table">
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>项目名称</th>
+                    <th>扫描时间</th>
+                    <th>漏洞总数</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for info in infos %}
+                    <tr>
+                        <td><a href="/report/?token={{ info.token }}" target="_blank">{{ info.id }}</a></td>
+                        <td><a href="/report/?token={{ info.token }}" target="_blank">{{ info.name }}</a></td>
+                        <td>{{ info.time | date:"Y-m-d h:i:s"  }}</td>
+                        <td>{{ info.total }}</td>
+                        <td>
+                            <div class="nz">
+                                <button type="button" data-id="{{ info.token }}" class="ce apn delete-project">
+                                    <span class="bv zz"></span>
+                                </button>
+                                <button type="button" data-id="{{ info.token }}" class="ce apn run-project">
+                                    <span class="bv aak"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="db" id="paginate"></div>
+    <input type="hidden" name="page" value="{{ data.page }}">
+{% endblock %}
+{% block scripts %}
+    <script>
+        var main = {
+            keyword: function () {
+                return $('input.btn-search-projects').val();
+            },
+            page: function () {
+                return $('input[name=page]').val();
+            },
+            init: function () {
+                // pagination
+                make_pagination('{{ data.page }}', '{{ data.total }}');
+
+                // search
+                $(".btn-search-projects").keyup(function (event) {
+                    if (event.keyCode == 13) {
+
+                        window.location.href = '/?keyword=' + main.keyword();
+
+                    }
+                });
+
+
+
+                $('.delete-project').on('click', function () {
+                    var pid = $(this).attr('data-id');
+                    var button = $(this);
+                    $.post("/api/del/", {"token": pid}, function (result) {
+                        if (result.code == 1001) {
+                            button.parents('tr').hide();
+                        } else {
+                            alert(result.message);
+                        }
+                    });
+                });
+
+                $('.run-project').on('click', function () {
+                    var pid = $(this).attr('data-id');
+                    var data = {'token': pid, }
+                    $.ajax({
+                        'url': '/api/start',
+                        'type': 'post',
+                        'data': data,
+                        'async': true,
+
+                    });
+                });
+            }
+        };
+        $(document).ready(function () {
+            main.init();
+        });
+    </script>
+{% endblock %}

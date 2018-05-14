@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<br lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>结果显示</title>
+</head>
+<br>
+<table border="1">
+  <tr>
+    <th>漏洞风险</th>
+    <th>Low</th>
+      <th>Medium</th>
+      <th>High</th>
+      <th>Critical</th>
+  </tr>
+    <tr>
+        <td>漏洞总数</td>
+        <td>{{ low }}</td>
+        <td>{{ Medium }}</td>
+        <td>{{ High }}</td>
+        <td>{{ Critical }}</td>
+    </tr>
+</table>
+</br>
+<table border="1">
+  <tr>
+    <th>编号</th>
+    <th>漏洞类型</th>
+      <th>漏洞风险</th>
+      <th>漏洞文件</th>
+
+  </tr>
+{% for result in results %}
+     <tr>
+    <td>{{ result.id }}</td>
+    <td>{{ result.title }}</td>
+     <td>{{ result.risk }}</td>
+         <td><a href="/issue/?id={{ result.id }}" >{{ result.FileName }}</a></td>
+  </tr>
+{% endfor %}
+</table>
+</body>
+</html>

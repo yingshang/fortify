@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<br lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>问题</title>
+
+</head>
+<h1>漏洞标题：{{ vul_title }}</h1>
+<h1>描述：</h1></br>
+{{ describe |linebreaks }}
+</br>
+</br>
+<br>
+影响行：{{ results.LineStart }}</br>
+漏洞成因:</br>
+{{ results.Abstract }}
+</br>
+影响部分代码:</br>
+{{results.Snippet |linebreaks  }}
+</br>
+全部代码</br>
+{{ full_code |linebreaks  }}<br>
+
+</br>
+
+<h1>修复方式：</h1>
+</br>
+{{ Recommendation |linebreaks }}
+
+
+</body>
+</html>

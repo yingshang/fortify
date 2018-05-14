@@ -1,0 +1,327 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<!--[if IE 8]><html class="ie ie8"> <![endif]-->
+<!--[if IE 9]><html class="ie ie9"> <![endif]-->
+<!--[if gt IE 9]><!-->
+<html xmlns="http://www.w3.org/1999/html"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ report_name }}项目信息</title>
+
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{% static "asset/ico/favicon.ico" %}" type="image/x-icon">
+
+    <!-- CSS -->
+    <link href="{% static "asset/css/base.css" %}" rel="stylesheet">
+    <link href="{% static "asset/css/report.css" %}" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="invoice-title">
+                <h2>代码审计平台</h2>
+
+            </div>
+            <hr>
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-id="inf" data-toggle="tab">Information</a></li>
+                <li><a data-id="vul" data-toggle="tab">Vulnerabilities</a></li>
+                <li><a data-id="ext" data-toggle="tab">Extensions</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="inf">
+                    <div class="row">
+                        <div class="col-md-4 column">
+                            <h4>Welcome to Fortify!</h4>
+                            <div class="row">
+
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>扫描信息</h5>
+                                        <table class="table table-striped table-bordered table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td>项目名字</td>
+                                                <td>{{ report_name  }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>报告时间</td>
+                                                <td>{{ scan_time | date:"Y-m-d"  }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                                <div class="col-xs-12">
+                                    <address>
+                                        <h5>漏洞数目</h5>
+                                        <table class="table table-striped table-bordered table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th>Level</th>
+
+                                                <th>Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody class="n-o-v">
+                                            <tr>
+                                                <td>Critical</td>
+
+                                                <td>{{ Critical_risk }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>High</td>
+
+                                                <td>{{ High_risk }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Medium</td>
+
+                                                <td>{{ Medium_risk }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Low</td>
+
+                                                <td>{{ low_risk }}</td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </address>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-8 column">
+                            <h4>高危漏洞分布</h4>
+                            {% if data.need_scan == False %}
+                                <h3 style="margin: 200px;">The project is deprecated :(</h3>
+                            {% else %}
+                                <div id="vul_distributing" style="height:400px;">
+                                    {% if data.vuls_number.result_number.unrepair_result_number == 0 %}
+                                        <img src="/asset/img/congratulations.jpg" class="congratulations" alt="">
+                                        <h3 style="text-align: center;font-weight: bold;color: red;">Wow, no vulnerability was detected :)</h3>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
+                <div class="tab-pane" id="vul">
+                    <div class="row">
+                        <div class="col-md-3 p0">
+                            <div id="panel-2" class="vl_panel"><strong>漏洞列表</strong><a title="Setting vulnerabilities filter" class="cog-panel filter_setting"><img class="icon" src="{% static "asset/icon/funnel.png" %}" alt="1"></a></div>
+                            <div class="filter">
+
+                                <div class="col-md-12" style="margin-top: 10px">
+                                    <label for="search_rule" style="color: #aaaaaa;">Rule</label>
+                                    <select id="search_rule" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="margin-top: 10px;">
+                                    <label for="search_level" style="color: #aaaaaa;">Level</label>
+                                    <select id="search_level" class="form-control" style="height: 30px;">
+                                        <option value="all">All</option>
+                                        <option value="Critical">Critical</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12" style="padding:20px 30%">
+                                    <button class="btn btn-success filter_btn" style="">Summit filter</button>
+                                </div>
+                            </div>
+                            <ul class="vulnerabilities_list scroll">
+
+                            </ul>
+                        </div>
+                        <div class="col-md-9 p0 form_code">
+                            <textarea id="code"><?php // This is a demo code</textarea>
+                                <div class="cm-loading" style="display:none;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane" id="ext">
+                    <div class="row">
+                        <div class="col-md-12 column">
+                            <h4>Extensions distribution statistics</h4>
+                            <div id="ext_distributing">
+
+                            </div>
+                        </div>
+                    </div><!-- End row -->
+                </div><!-- End rab -->
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Containers -->
+    <div class="row">
+        <div class="col-md-6">
+            <div>
+                <p style="float:left;">
+                    Copyright &copy; 2017 代码审计平台. All rights reserved
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="widget-list">
+        <ul class="widget-trigger">
+
+            <li>
+                漏洞标题: <span class="v-title"></span> <span class="v-type"></span>
+            </li>
+            <li>
+                漏洞等级: <span class="v-level"></span>
+            </li>
+
+                漏洞描述: <pre class="v-describe"></pre>
+            </li>
+        <li>
+                修复建议: <pre class="v-Recommendation"></pre>
+            </li>
+
+            <li>
+                {% if data.is_login %}
+                    <button class="btn btn-info btn-xs mistake">Mistake</button>
+                    <button class="btn btn-danger btn-xs delete">Delete</button>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+<img class="icon exit-full-screen" src="{% static "asset/icon/resize-100.png" %}" alt="Full screen">
+    <script src="{% static "asset/js/jquery-1.11.2.min.js" %}"></script>
+    <script src="{% static "asset/js/echarts.min.js" %}" charset="utf-8"></script>
+    <!-- CodeMirror START -->
+    <script src="{% static  "asset/codemirror/lib/codemirror.js" %}"></script>
+    <link rel="stylesheet" href="{% static  "asset/codemirror/lib/codemirror.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/theme/material.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/addon/fold/foldgutter.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/addon/dialog/dialog.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/addon/search/matchesonscrollbar.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/addon/scroll/simplescrollbars.css" %}">
+    <link rel="stylesheet" href="{% static  "asset/codemirror/addon/display/fullscreen.css" %}">
+    <script src="{% static  "asset/codemirror/addon/fold/foldcode.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/fold/foldgutter.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/fold/markdown-fold.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/fold/comment-fold.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/fold/xml-fold.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/fold/brace-fold.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/display/placeholder.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/display/fullscreen.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/display/panel.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/edit/matchbrackets.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/edit/matchtags.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/dialog/dialog.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/search/searchcursor.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/search/search.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/scroll/annotatescrollbar.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/search/matchesonscrollbar.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/search/jump-to-line.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/search/match-highlighter.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/scroll/simplescrollbars.js" %}"></script>
+    <script src="{% static  "asset/codemirror/addon/selection/active-line.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/markdown/markdown.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/javascript/javascript.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/css/css.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/xml/xml.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/yaml/yaml.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/htmlmixed/htmlmixed.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/php/php.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/python/python.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/ruby/ruby.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/perl/perl.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/lua/lua.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/go/go.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/cmake/cmake.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/shell/shell.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/sql/sql.js" %}"></script>
+    <script src="{% static  "asset/codemirror/mode/clike/clike.js" %}"></script>
+    <!-- CodeMirror END -->
+    <script src="{% static "asset/js/report.js" %}" charset="utf-8"></script>
+    <script>
+        var types = [];
+        var vuls = [];
+        {% for vul in critical_title %}
+            types.push('{{ vul.title }}');
+            vuls.push({value: {{ vul.title__count }}, name: '{{ vul.title }}'});
+        {% endfor %}
+        option = {
+            tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c} ({d}%)"
+            },
+            legend: {
+                orient: 'vertical',
+                x: 'left',
+                data: types
+            },
+            series: [
+                {
+                    name: 'Vulnerability hazard ratio',
+                    type: 'pie',
+                    selectedMode: 'single',
+                    radius: [0, 70],
+
+                    itemStyle : {
+                normal : {
+                    label : {
+                        position : 'inner'
+                    },
+                    labelLine : {
+                        show : true
+                    }
+                }
+                    },
+                    data: [
+                        {%  if Critical_risk != 0 %}
+                            {value: {{ Critical_risk }}, name: 'Critical'},
+                        {% endif %}
+                        {%  if High_risk != 0 %}
+                            {value: {{ High_risk }}, name: 'High', selected: true},
+                        {% endif %}
+                        {%  if Medium_risk != 0 %}
+                            {value: {{ Medium_risk }}, name: 'Medium'},
+                        {% endif %}
+                        {%  if low_risk != 0 %}
+                            {value: {{ low_risk }}, name: 'Low'},
+                        {% endif %}
+                    ]
+                },
+                {
+                    name: 'Vulnerability type accounting',
+                    type: 'pie',
+                    radius: ['40%', '65%'],
+                    data: vuls
+                }
+            ]
+        };
+        {% if data.vuls_number.result_number.unrepair_result_number != 0 and data.need_scan != False%}
+            var vul_distributing = echarts.init(document.getElementById('vul_distributing'));
+            vul_distributing.setOption(option);
+        {% endif %}
+    </script>
+</div>
+</body>
+</html>
+
